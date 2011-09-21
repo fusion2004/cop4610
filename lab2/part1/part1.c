@@ -6,13 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 #include "part1.h"
 
 int shared_variable = 0;
 
 int main(int argc, char *argv[]) {
-//  if(argc == 1 || (argc == 2 &&
-  printUsage();
+  if(argc != 2) {
+    printUsage();
+  }
 }
 
 void printUsage() {
