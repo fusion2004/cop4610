@@ -6,11 +6,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "part1.h"
 
 int shared_variable = 0;
 
 int main(int argc, char *argv[]) {
 //  if(argc == 1 || (argc == 2 &&
+  printUsage();
+}
+
+void printUsage() {
+  printf("usage: part1 <# of threads to run>\n");
+//  printf("  The number of threads to run must be an integer.");
 }
 
 void SimpleThread(int which) {
