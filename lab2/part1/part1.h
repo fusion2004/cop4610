@@ -7,6 +7,7 @@
 #define PART1_H
 
 void printUsage();
+void printInputError();
 
 void SimpleThread(int which);
 
