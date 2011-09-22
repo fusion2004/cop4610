@@ -25,9 +25,16 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], check_it) != 0) {
       printInputError();
     } else {
+      int thread, thingy = 1;
+      pthread_t th_id;
+      thread = pthread_create(&th_id, NULL, (void *)&SimpleThread, &thingy);
+      printf("Thread created: %d\n", (int)th_id);
+      pthread_join(th_id, NULL);
+
       // actual running code goes here
     }
   }
+  return 0;
 }
 
 void printUsage() {
@@ -39,7 +46,9 @@ void printInputError() {
   printf("Error: Incorrect input.\n");
 }
 
-void SimpleThread(int which) {
+void SimpleThread(void *args) {
+  int which = *(int *)args;
+  printf("Thread started with value: %d\n", which);
   int num, val;
 
   for(num = 0; num < 20; num++) {
@@ -54,4 +63,6 @@ void SimpleThread(int which) {
 
   val = shared_variable;
   printf("Thread %d sees final value %d\n", which, val);
+
+  //return 0;
 }

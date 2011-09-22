@@ -9,6 +9,6 @@
 void printUsage();
 void printInputError();
 
-void SimpleThread(int which);
+void SimpleThread(void *args);
 
 #endif
