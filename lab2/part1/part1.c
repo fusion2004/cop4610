@@ -48,10 +48,16 @@ int main(int argc, char *argv[]) {
       pthread_t th_id[num_threads+1];
 
 #ifdef PTHREAD_SYNC
-      // We'll initialize the barrier used to sync all the threads before
+      // Initialize the barrier used to sync all the threads before
       // printing out the final value of the shared variable.
       if(pthread_barrier_init(&barr, NULL, num_threads)) {
         printf("Error: Could not create a barrier\n");
+        return -1;
+      }
+
+      // Initialize the mutex used to lock and unlock the shared variable.
+      if(pthread_mutex_init(&shavar_mutex, NULL)) {
+        printf("Error: Unable to initialize a mutex\n");
         return -1;
       }
 #endif
@@ -95,11 +101,17 @@ void SimpleThread(void *args) {
     }
 
 #ifdef PTHREAD_SYNC
-    // sync code lol
+    pthread_mutex_lock(&shavar_mutex);
 #endif
+
     val = shared_variable;
     printf("*** thread %d sees value %d\n", which, val);
     shared_variable = val + 1;
+
+#ifdef PTHREAD_SYNC
+    pthread_mutex_unlock(&shavar_mutex);
+#endif
+
   }
 
 #ifdef PTHREAD_SYNC
