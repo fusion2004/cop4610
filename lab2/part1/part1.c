@@ -12,6 +12,7 @@
 #include "part1.h"
 
 int shared_variable = 0;
+pthread_barrier_t barr;
 
 int main(int argc, char *argv[]) {
   if(argc != 2) {
@@ -27,6 +28,14 @@ int main(int argc, char *argv[]) {
     } else {
       int thread, i;
       pthread_t th_id[num_threads+1];
+
+#ifdef PTHREAD_SYNC
+      if(pthread_barrier_init(&barr, NULL, num_threads)) {
+        printf("Error: Could not create a barrier\n");
+        return -1;
+      }
+#endif
+
       for(i = 1; i <= num_threads; i++) {
         thread = pthread_create(&th_id[i], NULL, (void *)&SimpleThread, (void *)i);
       }
@@ -58,11 +67,21 @@ void SimpleThread(void *args) {
       usleep(10);
     }
 
+#ifdef PTHREAD_SYNC
+    // sync code lol
+#endif
     val = shared_variable;
     printf("*** thread %d sees value %d\n", which, val);
     shared_variable = val + 1;
   }
 
+#ifdef PTHREAD_SYNC
+  int rc = pthread_barrier_wait(&barr);
+  if(rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) {
+    printf("Error: Could not wait on barrier\n");
+    exit(-1);
+  }
+#endif
   val = shared_variable;
   printf("Thread %d sees final value %d\n", which, val);
 
