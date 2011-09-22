@@ -1,30 +1,8 @@
-TARGET  := part1
-SRCS    := part1.c
-OBJS    := ${SRCS:.c=.o}
-DEPS    := ${SRCS:.c=.dep}
-XDEPS   := $(wildcard ${DEPS})
+CFLAGS = -std=gnu99 -O2 -Wall -Werror -ggdb -pthread
 
-CCFLAGS = -std=gnu99 -O2 -Wall -Werror -ggdb -pthread
-LDFLAGS = -pthread
-LIBS    = 
-
-.PHONY: all clean distclean
-all:: ${TARGET}
-
-ifneq (${XDEPS},)
-include ${XDEPS}
-endif
-
-${TARGET}: ${OBJS}
-	${CC} ${LDFLAGS} -o $@ $^ ${LIBS}
-
-${OBJS}: %.o: %.c %.dep
-	${CC} ${CCFLAGS} -o $@ -c $<
-
-${DEPS}: %.dep: %.c Makefile
-	${CC} ${CCFLAGS} -MM $< > $@
+all: part1.c
+	${CC} ${CFLAGS} -o part1 $^
+	${CC} ${CFLAGS} -DPTHREAD_SYNC -o part1-sync $^
 
 clean::
-	-rm -f *~ *.o *.dep ${TARGET}
-
-distclean:: clean
+	-rm *~ *.o *.dep part1 part1-sync
