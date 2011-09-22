@@ -25,16 +25,15 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], check_it) != 0) {
       printInputError();
     } else {
-      int thread;
-      pthread_t th_id;
-      for(int i = 1; i <= num_threads; i++) {
-        
-        thread = pthread_create(&th_id, NULL, (void *)&SimpleThread, (void *)i);
-        //printf("Thread created: %d\n", (int)th_id);
-        pthread_join(th_id, NULL);
+      int thread, i;
+      pthread_t th_id[num_threads+1];
+      for(i = 1; i <= num_threads; i++) {
+        thread = pthread_create(&th_id[i], NULL, (void *)&SimpleThread, (void *)i);
+      }
+      for(i = 1; i <= num_threads; i++) {
+        pthread_join(th_id[i], NULL);
       }
 
-      // actual running code goes here
     }
   }
   return 0;
@@ -51,7 +50,7 @@ void printInputError() {
 
 void SimpleThread(void *args) {
   int which = (int)args;
-  printf("Thread started with value: %d\n", which);
+  //printf("Thread started with value: %d\n", which);
   int num, val;
 
   for(num = 0; num < 20; num++) {
