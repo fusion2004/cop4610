@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], check_it) != 0) {
       printInputError();
     } else {
-      int thread, i;
+      int i;
       pthread_t th_id[num_threads+1];
 
 #ifdef PTHREAD_SYNC
@@ -37,10 +37,16 @@ int main(int argc, char *argv[]) {
 #endif
 
       for(i = 1; i <= num_threads; i++) {
-        thread = pthread_create(&th_id[i], NULL, (void *)&SimpleThread, (void *)i);
+        if(pthread_create(&th_id[i], NULL, (void *)&SimpleThread, (void *)i)) {
+          printf("Error: Could not create thread %d\n", i);
+          return -1;
+        }
       }
       for(i = 1; i <= num_threads; i++) {
-        pthread_join(th_id[i], NULL);
+        if(pthread_join(th_id[i], NULL)) {
+          printf("Error: Could not join thread %d\n", i);
+          return -1;
+        }
       }
 
     }
