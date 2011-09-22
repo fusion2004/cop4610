@@ -15,7 +15,7 @@ int shared_variable = 0;
 
 int main(int argc, char *argv[]) {
   if(argc != 2) {
-    printUsage();
+    printUsage(argv[0]);
   } else {
     int num_threads = atoi(argv[1]);
     char check_it[strlen(argv[1]) + 1];
@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-void printUsage() {
-  printf("usage: part1 <# of threads to run>\n");
+void printUsage(char *application) {
+  printf("usage: %s <# of threads to run>\n", application);
   printf("The number of threads to run must be an integer.\n");
 }
 
