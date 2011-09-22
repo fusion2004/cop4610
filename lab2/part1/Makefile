@@ -4,8 +4,8 @@ OBJS    := ${SRCS:.c=.o}
 DEPS    := ${SRCS:.c=.dep}
 XDEPS   := $(wildcard ${DEPS})
 
-CCFLAGS = -std=gnu99 -O2 -Wall -Werror -ggdb
-LDFLAGS = 
+CCFLAGS = -std=gnu99 -O2 -Wall -Werror -ggdb -pthread
+LDFLAGS = -pthread
 LIBS    = 
 
 .PHONY: all clean distclean
