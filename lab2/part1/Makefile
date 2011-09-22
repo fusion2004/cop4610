@@ -5,4 +5,4 @@ all: part1.c
 	${CC} ${CFLAGS} -DPTHREAD_SYNC -o part1-sync $^
 
 clean::
-	-rm *~ *.o *.dep part1 part1-sync
+	-rm -f *~ *.o *.dep part1 part1-sync
