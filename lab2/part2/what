@@ -1,0 +1,38 @@
+cc -std=gnu99 -O2 -Wall -Werror -ggdb -pthread -o part2 part2.c
+cc1: warnings being treated as errors
+part2.c: In function ‘main’:
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: passing argument 1 of ‘strlen’ makes pointer from integer without a cast
+/usr/include/string.h:397: note: expected ‘const char *’ but argument is of type ‘int’
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: passing argument 2 of ‘__builtin_strcmp’ makes pointer from integer without a cast
+part2.c:36: note: expected ‘const char *’ but argument is of type ‘int’
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: passing argument 2 of ‘__builtin_strcmp’ makes pointer from integer without a cast
+part2.c:36: note: expected ‘const char *’ but argument is of type ‘int’
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: passing argument 1 of ‘strlen’ makes pointer from integer without a cast
+/usr/include/string.h:397: note: expected ‘const char *’ but argument is of type ‘int’
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: passing argument 2 of ‘__builtin_strcmp’ makes pointer from integer without a cast
+part2.c:36: note: expected ‘const char *’ but argument is of type ‘int’
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: the address of ‘check_num_conference’ will never be NULL
+part2.c:36: error: passing argument 2 of ‘__builtin_strcmp’ makes pointer from integer without a cast
+part2.c:36: note: expected ‘const char *’ but argument is of type ‘int’
+part2.c:36: error: expected ‘)’ before ‘{’ token
+part2.c:44: error: expected expression before ‘}’ token
+make: *** [all] Error 1

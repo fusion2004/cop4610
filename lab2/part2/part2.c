@@ -26,36 +26,44 @@ int main(int argc, char *argv[]) {
     int num_threads = atoi(argv[1]);
     num_conference  = atoi(argv[2]);
 
-    char check_num_threads[strlen(argv[1] + 1);
-    char check_num_conference[strlen(argv[2] + 1);
+    char check_num_threads[strlen(argv[1]) + 1];
+    char check_num_conference[strlen(argv[2]) + 1];
 
     sprintf(check_num_threads, "%d", num_threads);
     sprintf(check_num_conference, "%d", num_conference);
 
     if(strcmp(argv[1], check_num_threads) != 0 ||
-       strcmp(argv[2], check_num_conference != 0) {
+       strcmp(argv[2], check_num_conference) != 0) {
       printf("some errors\n");
       return -1;
     }
 
-    pthread_t speaker;
-    pthread_t reporters[num_threads];
+    //pthread_t speaker;
+    //pthread_t reporters[num_threads];
 
   }
   return 0;
 }
 
-void Speaker();
-void Reporter(int id);
-void AnswerStart();
-void AnswerDone();
-void EnterConferenceRoom();
-void LeaveConferenceRoom();
-void QuestionStart();
-void QuestionDone();
+void Speaker() {
+}
+void Reporter(int id) {
+}
+void AnswerStart() {
+}
+void AnswerDone() {
+}
+void EnterConferenceRoom() {
+}
+void LeaveConferenceRoom() {
+}
+void QuestionStart() {
+}
+void QuestionDone() {
+}
 
 void SpeakerThread(void *args) {
-  while(true) {
+  while(1) {
     AnswerStart();
     AnswerDone();
   }
@@ -75,5 +83,3 @@ void ReporterThread(void *args) {
 
   LeaveConferenceRoom();
 }
-
-#endif
