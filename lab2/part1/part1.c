@@ -88,7 +88,7 @@ void printUsage(char *application) {
 }
 
 void printInputError() {
-  printf("Error: Incorrect input.\n");
+  printf("Error: ARBRITRARY GARBAGE DETECTED. BOOTING KILLBOTS.\n");
 }
 
 void SimpleThread(void *args) {
