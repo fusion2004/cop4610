@@ -10,8 +10,8 @@ int Speaker();
 int Reporter(int id);
 void AnswerStart();
 void AnswerDone();
-void EnterConferenceRoom();
-void LeaveConferenceRoom();
+void EnterConferenceRoom(int id);
+void LeaveConferenceRoom(int id);
 void QuestionStart();
 void QuestionDone();
 

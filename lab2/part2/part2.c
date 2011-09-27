@@ -101,10 +101,12 @@ void AnswerStart() {
 }
 void AnswerDone() {
 }
-void EnterConferenceRoom() {
+void EnterConferenceRoom(int id) {
   sem_wait(&conference_room_sem);
+  printf("Reporter %d enters the conference room.\n", id);
 }
-void LeaveConferenceRoom() {
+void LeaveConferenceRoom(int id) {
+  printf("Reporter %d leaves the conference room.\n", id);
   sem_post(&conference_room_sem);
 }
 void QuestionStart() {
@@ -122,7 +124,7 @@ void ReporterThread(void *args) {
   int id = (int)args;
   int questions = id % 4 + 2;
 
-  EnterConferenceRoom();
+  EnterConferenceRoom(id);
 
   while(questions > 0) {
     QuestionStart();
@@ -131,5 +133,5 @@ void ReporterThread(void *args) {
     questions--;
   }
 
-  LeaveConferenceRoom();
+  LeaveConferenceRoom(id);
 }
