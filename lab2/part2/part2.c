@@ -15,6 +15,9 @@ int num_conference;
 
 pthread_mutex_t speech_mutex;
 pthread_mutex_t question_mutex;
+
+pthread_mutex_t reporter_mutex;
+pthread_cond_t  reporter_cond;
 pthread_mutex_t speaker_mutex;
 pthread_cond_t  speaker_cond;
 
@@ -36,6 +39,15 @@ int main(int argc, char *argv[]) {
        strcmp(argv[2], check_num_conference) != 0) {
       printf("some errors\n");
       return -1;
+    }
+
+    if(pthread_mutex_init(&speech_mutex, NULL) &&
+       pthread_mutex_init(&question_mutex, NULL) &&
+       pthread_mutex_init(&reporter_mutex, NULL) &&
+       pthread_cond_init(&reporter_cond, NULL) &&
+       pthread_mutex_init(&speaker_mutex, NULL) &&
+       pthread_cond_init(&speaker_cond, NULL)) {
+      printf("more errors\n");
     }
 
     //pthread_t speaker;
