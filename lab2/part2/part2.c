@@ -18,10 +18,8 @@ sem_t conference_room_sem;
 pthread_mutex_t speech_mutex;
 pthread_mutex_t question_mutex;
 
-pthread_mutex_t reporter_mutex;
-pthread_cond_t  reporter_cond;
-pthread_mutex_t speaker_mutex;
-pthread_cond_t  speaker_cond;
+pthread_mutex_t floor_mutex;
+pthread_cond_t  floor_cond;
 
 int main(int argc, char *argv[]) {
   if(argc != 3) {
@@ -47,10 +45,8 @@ int main(int argc, char *argv[]) {
     if(sem_init(&conference_room_sem, 0, num_conference) &&
        pthread_mutex_init(&speech_mutex, NULL) &&
        pthread_mutex_init(&question_mutex, NULL) &&
-       pthread_mutex_init(&reporter_mutex, NULL) &&
-       pthread_cond_init(&reporter_cond, NULL) &&
-       pthread_mutex_init(&speaker_mutex, NULL) &&
-       pthread_cond_init(&speaker_cond, NULL)) {
+       pthread_mutex_init(&floor_mutex, NULL) &&
+       pthread_cond_init(&floor_cond, NULL)) {
       printf("Error: Could not initialize mutex/cond/sem.\n");
     }
 
@@ -109,9 +105,23 @@ void LeaveConferenceRoom(int id) {
   printf("Reporter %d leaves the conference room.\n", id);
   sem_post(&conference_room_sem);
 }
-void QuestionStart() {
+void QuestionStart(id) {
+  pthread_mutex_lock(&speech_mutex);
+
+  printf("Reporter %d asks a question.\n", id);
+  question_asker = id;
+
+  pthread_mutex_lock(&floor_mutex);
+  pthread_cond_signal(&floor_cond);
+  pthread_cond_wait(&floor_cond, &floor_mutex);
 }
-void QuestionDone() {
+void QuestionDone(id) {
+  pthread_mutex_unlock(&floor_mutex);
+
+  printf("Reporter %d is satisfied.\n", id);
+  question_asker = -1;
+
+  pthread_mutex_unlock(&speech_mutex);
 }
 
 void SpeakerThread(void *args) {
@@ -127,8 +137,8 @@ void ReporterThread(void *args) {
   EnterConferenceRoom(id);
 
   while(questions > 0) {
-    QuestionStart();
-    QuestionDone();
+    QuestionStart(id);
+    QuestionDone(id);
 
     questions--;
   }
