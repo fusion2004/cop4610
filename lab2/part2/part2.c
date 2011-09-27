@@ -99,7 +99,6 @@ int Reporter(int id) {
   return thread;
 }
 void AnswerStart() {
-  pthread_mutex_lock(&floor_mutex);
   if(!started) {
     pthread_cond_signal(&floor_cond);
   }
@@ -111,7 +110,7 @@ void AnswerDone() {
   printf("Speaker is done with answer for reporter %d.\n", question_asker);
 
   pthread_cond_signal(&floor_cond);
-  pthread_mutex_unlock(&floor_mutex);
+//  pthread_mutex_unlock(&floor_mutex);
 }
 void EnterConferenceRoom(int id) {
   sem_wait(&conference_room_sem);
@@ -141,6 +140,7 @@ void QuestionDone(int id) {
 }
 
 void SpeakerThread(void *args) {
+  pthread_mutex_lock(&floor_mutex);
   while(1) {
     AnswerStart();
     AnswerDone();
