@@ -1,0 +1,10 @@
+Lab 2, Part 1 - COP4610
+Mark Oleson & Alexis Jefferson
+
+Run 'make' or 'make all' to compile the code.
+It will create both the unsynchronized and synchronized version of the
+program as 'part1' and 'part1-sync', respectively.
+
+Each expects and will only accept one parameter, the number of threads to be
+run. It also expects and will only accept that parameter if it is a valid
+integer.
