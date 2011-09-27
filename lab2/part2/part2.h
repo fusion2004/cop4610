@@ -8,12 +8,12 @@
 
 int Speaker();
 int Reporter(int id);
-void AnswerStart(int id);
-void AnswerDone(int id);
+void AnswerStart();
+void AnswerDone();
 void EnterConferenceRoom(int id);
 void LeaveConferenceRoom(int id);
-void QuestionStart();
-void QuestionDone();
+void QuestionStart(int id);
+void QuestionDone(int id);
 
 void SpeakerThread(void *args);
 void ReporterThread(void *args);

@@ -105,7 +105,7 @@ void LeaveConferenceRoom(int id) {
   printf("Reporter %d leaves the conference room.\n", id);
   sem_post(&conference_room_sem);
 }
-void QuestionStart(id) {
+void QuestionStart(int id) {
   pthread_mutex_lock(&speech_mutex);
 
   printf("Reporter %d asks a question.\n", id);
@@ -115,7 +115,7 @@ void QuestionStart(id) {
   pthread_cond_signal(&floor_cond);
   pthread_cond_wait(&floor_cond, &floor_mutex);
 }
-void QuestionDone(id) {
+void QuestionDone(int id) {
   pthread_mutex_unlock(&floor_mutex);
 
   printf("Reporter %d is satisfied.\n", id);
