@@ -12,11 +12,11 @@
 #include "part2.h"
 
 int question_asker = -1;
+int started = 0;
 int num_conference;
 
 sem_t conference_room_sem;
 pthread_mutex_t speech_mutex;
-pthread_mutex_t question_mutex;
 
 pthread_mutex_t floor_mutex;
 pthread_cond_t  floor_cond;
@@ -42,10 +42,9 @@ int main(int argc, char *argv[]) {
       return -1;
     }
 
-    if(sem_init(&conference_room_sem, 0, num_conference) &&
-       pthread_mutex_init(&speech_mutex, NULL) &&
-       pthread_mutex_init(&question_mutex, NULL) &&
-       pthread_mutex_init(&floor_mutex, NULL) &&
+    if(sem_init(&conference_room_sem, 0, num_conference) ||
+       pthread_mutex_init(&speech_mutex, NULL) ||
+       pthread_mutex_init(&floor_mutex, NULL) ||
        pthread_cond_init(&floor_cond, NULL)) {
       printf("Error: Could not initialize mutex/cond/sem.\n");
     }
@@ -54,11 +53,17 @@ int main(int argc, char *argv[]) {
     pthread_t speaker;
     pthread_t reporters[num_threads];
 
+    pthread_mutex_lock(&floor_mutex);
+
     speaker = Speaker();
     if(speaker == 0) {
       printf("Error: Could not create Speaker thread.\n");
       return -1;
     }
+
+    pthread_cond_wait(&floor_cond, &floor_mutex);
+    started = 1;
+    pthread_mutex_unlock(&floor_mutex);
 
     for(i = 0; i < num_threads; i++) {
       reporters[i] = Reporter(i);
@@ -94,8 +99,19 @@ int Reporter(int id) {
   return thread;
 }
 void AnswerStart() {
+  pthread_mutex_lock(&floor_mutex);
+  if(!started) {
+    pthread_cond_signal(&floor_cond);
+  }
+  pthread_cond_wait(&floor_cond, &floor_mutex);
+
+  printf("Speaker starts to answer question for reporter %d.\n", question_asker);
 }
 void AnswerDone() {
+  printf("Speaker is done with answer for reporter %d.\n", question_asker);
+
+  pthread_cond_signal(&floor_cond);
+  pthread_mutex_unlock(&floor_mutex);
 }
 void EnterConferenceRoom(int id) {
   sem_wait(&conference_room_sem);
