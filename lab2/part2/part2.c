@@ -25,7 +25,8 @@ pthread_cond_t  speaker_cond;
 
 int main(int argc, char *argv[]) {
   if(argc != 3) {
-    printf("usage: usage goes here\n");
+    printf("usage: %s <number of reporter threads> <capacity of conference room>\n", argv[0]);
+    return 0;
   }
   else {
     int num_threads = atoi(argv[1]);
@@ -39,7 +40,7 @@ int main(int argc, char *argv[]) {
 
     if(strcmp(argv[1], check_num_threads) != 0 ||
        strcmp(argv[2], check_num_conference) != 0) {
-      printf("some errors\n");
+      printf("Error: ARBRITRARY GARBAGE DETECTED. BOOTING KILLBOTS.\n");
       return -1;
     }
 
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
        pthread_cond_init(&reporter_cond, NULL) &&
        pthread_mutex_init(&speaker_mutex, NULL) &&
        pthread_cond_init(&speaker_cond, NULL)) {
-      printf("more errors\n");
+      printf("Error: Could not initialize mutex/cond/sem.\n");
     }
 
     int i;
