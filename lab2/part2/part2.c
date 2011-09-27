@@ -10,7 +10,18 @@
 
 #include "part2.h"
 
+int question_asker = -1;
+
+pthread_mutex_t speech_mutex;
+pthread_mutex_t question_mutex;
+pthread_mutex_t speaker_mutex;
+pthread_cond_t  speaker_cond;
+
 int main(int argc, char *argv[]) {
+
+  pthread_t speaker;
+  pthread_t reporters[];
+
   return 0;
 }
 
