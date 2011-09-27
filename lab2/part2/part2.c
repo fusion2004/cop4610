@@ -34,7 +34,26 @@ void LeaveConferenceRoom();
 void QuestionStart();
 void QuestionDone();
 
-void SpeakerThread(void *args);
-void ReporterThread(void *args);
+void SpeakerThread(void *args) {
+  while(true) {
+    AnswerStart();
+    AnswerDone();
+  }
+}
+void ReporterThread(void *args) {
+  int id = (int)args;
+  int questions = id % 4 + 2;
+
+  EnterConferenceRoom();
+
+  while(questions > 0) {
+    QuestionStart();
+    QuestionDone();
+
+    questions--;
+  }
+
+  LeaveConferenceRoom();
+}
 
 #endif
