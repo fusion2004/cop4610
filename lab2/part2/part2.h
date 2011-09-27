@@ -6,8 +6,8 @@
 #ifndef PART2_H
 #define PART2_H
 
-void Speaker();
-void Reporter(int id);
+int Speaker();
+int Reporter(int id);
 void AnswerStart();
 void AnswerDone();
 void EnterConferenceRoom();

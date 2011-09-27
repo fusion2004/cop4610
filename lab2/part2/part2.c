@@ -7,12 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "part2.h"
 
 int question_asker = -1;
 int num_conference;
 
+sem_t conference_room_sem;
 pthread_mutex_t speech_mutex;
 pthread_mutex_t question_mutex;
 
@@ -41,7 +43,8 @@ int main(int argc, char *argv[]) {
       return -1;
     }
 
-    if(pthread_mutex_init(&speech_mutex, NULL) &&
+    if(sem_init(&conference_room_sem, 0, num_conference) &&
+       pthread_mutex_init(&speech_mutex, NULL) &&
        pthread_mutex_init(&question_mutex, NULL) &&
        pthread_mutex_init(&reporter_mutex, NULL) &&
        pthread_cond_init(&reporter_cond, NULL) &&
@@ -50,24 +53,51 @@ int main(int argc, char *argv[]) {
       printf("more errors\n");
     }
 
-    //pthread_t speaker;
-    //pthread_t reporters[num_threads];
+    int i;
+    pthread_t speaker;
+    pthread_t reporters[num_threads];
+
+    speaker = Speaker();
+    if(speaker == 0) {
+      printf("Error: Could not create Speaker thread.\n");
+      return -1;
+    }
+
+    for(i = 0; i < num_threads; i++) {
+      reporters[i] = Reporter(i);
+      if(reporters[i] == 0) {
+        printf("Error: Could not create Reporter(%d) thread.\n", i);
+        return -1;
+      }
+    }
 
   }
   return 0;
 }
 
-void Speaker() {
+int Speaker() {
+  pthread_t thread;
+  if(pthread_create(&thread, NULL, (void *)&SpeakerThread, NULL)) {
+    return 0;
+  }
+  return thread;
 }
-void Reporter(int id) {
+int Reporter(int id) {
+  pthread_t thread;
+  if(pthread_create(&thread, NULL, (void *)&ReporterThread, (void *)id)) {
+    return 0;
+  }
+  return thread;
 }
 void AnswerStart() {
 }
 void AnswerDone() {
 }
 void EnterConferenceRoom() {
+  sem_wait(&conference_room_sem);
 }
 void LeaveConferenceRoom() {
+  sem_post(&conference_room_sem);
 }
 void QuestionStart() {
 }
