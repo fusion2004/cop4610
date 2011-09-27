@@ -72,6 +72,13 @@ int main(int argc, char *argv[]) {
       }
     }
 
+    for(i = 0; i < num_threads; i++) {
+      if(pthread_join(reporters[i], NULL)) {
+        printf("Error: Could not join Reporter(%d) thread.\n", i);
+        return -1;
+      }
+    }
+
   }
   return 0;
 }
