@@ -1,0 +1,10 @@
+Alexis Jefferson
+Mark Oleson
+
+Part 1 Report
+
+Program without Synchronization (filename is "part1"):
+Without the synchronization, you have no idea what the final value that the thread wil see will be. For example, if there are 5 threads, the final value seen by all the threads was different. I ran the program again with 5 threads and all the values changed again. This similar effect was observed when running the program with 2, 3, and 4 threads. When we have 1 thread, the program runs linearly so it works as if synchronized.
+
+Program with Synchronization (filename is "part1-sync"):
+With the synchronization, the final value all the threads see is always the same. Every time I run the program, it is always the same number if I have the same number of threads. For example, if there are 5 threads, the final value seen is always 100. No matter how many times I run the program. For 2 threads, the final value was always 40. For 3 threads, the final value was always 60. And with 4 threads, the final value was always 80. When run with 1 thread, the synchronized program matches the unsynchronized program. This is because there is only 1 thread running, thus making it linear.
