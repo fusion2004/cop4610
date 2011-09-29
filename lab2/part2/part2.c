@@ -36,8 +36,10 @@ int main(int argc, char *argv[]) {
     sprintf(check_num_threads, "%d", num_threads);
     sprintf(check_num_conference, "%d", num_conference);
 
-    if(strcmp(argv[1], check_num_threads) != 0 ||
-       strcmp(argv[2], check_num_conference) != 0) {
+    if(strcmp(argv[1], check_num_threads)    != 0 ||
+       strcmp(argv[2], check_num_conference) != 0 ||
+       num_threads    <= 0 ||
+       num_conference <= 0) {
       printf("Error: ARBRITRARY GARBAGE DETECTED. BOOTING KILLBOTS.\n");
       return -1;
     }

@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     sprintf(check_it, "%d", num_threads);
 
     // If it doesn't match, we'll print out an error and exit the program.
-    if(strcmp(argv[1], check_it) != 0) {
+    if(strcmp(argv[1], check_it) != 0 || num_threads <= 0) {
       printInputError();
       return -1;
     }
