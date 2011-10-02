@@ -1,0 +1,50 @@
+Alexis Jefferson
+Mark Oleson
+
+Part 2 Report
+
+Our conference program uses one semaphore. The semaphore 
+represents the conference room. One of the parameters to our program tells how 
+many reporters are allowed in the semaphore "conference room" at one time. This 
+is the reason we used a semaphore: it mimics the functionality we need in the 
+conference room perfectly. The enter and leave conference room functions call 
+sem_wait and sem_post respectively. The sem_wait function will wait until there 
+is an empty space in the semaphre. The sem_post tells all those waiting on the 
+semaphore that there is a new space.
+
+Then our program uses two mutex locks: floor_mutex and speech_mutex. The first 
+lock is for the speaking floor. This lock is used between the reporter and speaker 
+to allow a back and forth conversation without the reporter interrupting the 
+speaker and vise versa. This lock also has a condition associated with it: 
+floor_cond.
+
+The second mutex lock is for the reporters. When one reporter is asking a question, 
+the other reporters need to wait until that reporter is finished with his question.
+
+The way all these work together is as follows. First, the speaker is created and 
+calls his AnswerStart(). When AnswerStart() is called for the first time, it 
+signals those held on the floor_cond. In this case, it would be the main thread. 
+The reason for this is to make sure the Speaker is created before going any 
+further. 
+
+Now we know the speaker is created for sure, and the main thread creates 
+the reporters threads. The reporters get an ID and based off that ID, it knows 
+how many questions to ask.Once created, they are all calling EnterConferenceRoom(). 
+Those that are able to enter the conference room semaphore then call 
+QuestionStart(). QuestionStart() first locks the speech_mutex. This reporter that 
+gets the speech_mutex lock, gets to ask his question first. The reporter asks his 
+questions and signals the floor_cond. Then he immediately waits on the floor_cond. 
+
+At this point, the Speaker is the one who is waiting for this condition signal and 
+he immediately continues his AnswerStart(). He answers the question and signals the 
+flood_cond. This goes back to the Reporter. He calls his QuestionEnd() function. 
+This releases the speech_mutex lock so that another reporter can ask his question.
+
+The speaker will loop until the program ends. He will call AnswerStart() and 
+AnswerDone() in this loop. The reporters will loop with QuestionStart() and 
+QuestionEnd() until they run out of questions. At which point, that reporter will 
+leave theconference room, calling LeaveConferenceRoom(). This allows another reporter 
+to enter.
+
+Then the main function joins all the reporter threads. When all the reporter threads
+have joined, the program ends.
