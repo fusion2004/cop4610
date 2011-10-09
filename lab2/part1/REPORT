@@ -23,6 +23,6 @@ running, thus making it linear.
 
 DESCRPTION OF TASKS
 +Mark Oleson: Wrote the make file, header, and C program.
-+Alexis Jefferson: Wrote report and comments.
-Both of us discussed ideas together.
-
++Alexis Jefferson: Implemented own version of part1 which was dropped due 
+to the final version. Wrote the report and comments. Also tested and gave 
+suggestions.
