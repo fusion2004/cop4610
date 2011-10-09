@@ -48,3 +48,9 @@ to enter.
 
 Then the main function joins all the reporter threads. When all the reporter threads
 have joined, the program ends.
+
+
+DESCRPTION OF TASKS
++Mark Oleson: Wrote the make file, header, and C program.
++Alexis Jefferson: Wrote report and comments.
+Both of us discussed ideas together.
