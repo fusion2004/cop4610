@@ -20,3 +20,9 @@ value was always 40. For 3 threads, the final value was always 60. And with 4
 threads, the final value was always 80. When run with 1 thread, the synchronized 
 program matches the unsynchronized program. This is because there is only 1 thread 
 running, thus making it linear.
+
+DESCRPTION OF TASKS
++Mark Oleson: Wrote the make file, header, and C program.
++Alexis Jefferson: Wrote report and comments.
+Both of us discussed ideas together.
+
