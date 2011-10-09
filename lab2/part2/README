@@ -1,0 +1,10 @@
+Lab 2, Part 2 - COP4610
+Mark Oleson & Alexis Jefferson
+
+Run 'make' or 'make all' to compile the code.
+It will create the program as 'part2'.
+
+It will accept only two parameters, the number of reporter threads to be run
+and the number of reporters allowed in the conference room at one time.
+It also expects and will only accept those parameters if they are valid
+positive integers.
