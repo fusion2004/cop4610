@@ -11,14 +11,15 @@
 
 #include "part2.h"
 
-/* Holds the ID of the reporter currently asking the questions */
+/* Holds the ID of the reporter currently asking the questions,
+   synchronized by the speech_mutex */
 int question_asker = -1;
 
 int started = 0;
 int num_conference;
 
-/* Conference room and has a limit to how many threads (reporters) can be allowed in 
-at once */
+/* Conference room and has a limit to how many threads (reporters) can be
+   allowed in at once */
 sem_t conference_room_sem;
 
 /* A lock on the speech to allow only one reporter to talk at one time */
@@ -52,21 +53,22 @@ int main(int argc, char *argv[]) {
       return -1;
     }
 
-    /* Initializes the semaphore with the number of reporters allowed at one 
-	time. Also initializes the mutex locks and conditions.  */
+    /* Initializes the semaphore with the number of reporters allowed at one
+       time. Also initializes the mutex locks and conditions.  */
     if(sem_init(&conference_room_sem, 0, num_conference) ||
        pthread_mutex_init(&speech_mutex, NULL) ||
        pthread_mutex_init(&floor_mutex, NULL) ||
        pthread_cond_init(&floor_cond, NULL)) {
       printf("Error: Could not initialize mutex/cond/sem.\n");
+      return -1;
     }
 
     int i;
     pthread_t speaker;
     pthread_t reporters[num_threads];
 
-    /* First, the floor is locked, to now allow any thread to start speaking until all threads
-	are ready */
+    /* First, the floor is locked, to now allow any thread to start speaking
+      until all threads are ready */
     pthread_mutex_lock(&floor_mutex);
 
     speaker = Speaker();
@@ -75,12 +77,12 @@ int main(int argc, char *argv[]) {
       return -1;
     }
 
-    /* Now we wait on the condition, this is to allow the speaker to be created and
-	then the speaker will signal and wait */
+    /* Now we wait on the condition, this is to allow the speaker to be created
+       and then the speaker will signal and wait */
     pthread_cond_wait(&floor_cond, &floor_mutex);
 
-    /* Now the speaker is done being created and is currently waiting. Setting 
-	var started to 1, to represent that we have started. */
+    /* Now the speaker is done being created and is currently waiting. Setting
+       var started to 1, to represent that we have started. */
     started = 1;
     pthread_mutex_unlock(&floor_mutex);
 
@@ -93,8 +95,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    /* Main spends the rest of its time trying to join the Reporters when they are 
-	finished */
+    /* Main joins the Reporter threads and exits when they are finished */
     for(i = 0; i < num_threads; i++) {
       if(pthread_join(reporters[i], NULL)) {
         printf("Error: Could not join Reporter(%d) thread.\n", i);
@@ -116,7 +117,7 @@ int Speaker() {
   return thread;
 }
 
-/* Creates the reporter thread. Returns 0 if the thread was not created properly, 
+/* Creates a reporter thread. Returns 0 if the thread was not created properly,
    else returns the thread. */
 int Reporter(int id) {
   pthread_t thread;
@@ -126,13 +127,13 @@ int Reporter(int id) {
   return thread;
 }
 
-/* If not started (aka, started = 0), then signal on the condition. That will unlock the 
-   floor_mutex and allow another to aquire the lock.
+/* If not started (aka, started = 0), then signal on the condition. That will
+   unlock the floor_mutex and allow another to aquire the lock.
    The reporter will aquire the lock.
-   When it has started (aka started = 1), and the speaker will have to wait on the condition 
-   floor_cond to be signaled.
-   This signal comes from the QuestionStart() function from a reporter. So the speaker 
-   starts answering the question. */
+   When it has started (aka started = 1), and the speaker will have to wait on
+   the condition floor_cond to be signaled.
+   This signal comes from the QuestionStart() function from a reporter. So the
+   speaker starts answering the question. */
 void AnswerStart() {
   if(!started) {
     pthread_cond_signal(&floor_cond);
@@ -142,9 +143,9 @@ void AnswerStart() {
   printf("Speaker starts to answer question for reporter %d.\n", question_asker);
 }
 
-/* After a speaker answers the question, he signals the floor_cond, which will awake 
-   the reporter thread who is waiting for his question to be done (to call QuestionDone() 
-   function). */
+/* After a speaker answers the question, he signals the floor_cond, which will
+   awake the reporter thread who is waiting for his question to be done (to
+   call QuestionDone()). */
 void AnswerDone() {
   printf("Speaker is done with answer for reporter %d.\n", question_asker);
 
@@ -152,24 +153,24 @@ void AnswerDone() {
 //  pthread_mutex_unlock(&floor_mutex);
 }
 
-/* When a reporter enters the conference room, he first has to wait to see if the 
-   conference room has space. If there is space, he enters. If there isn't he waits 
-   until there is space. */
+/* When a reporter enters the conference room, he first has to wait to see if
+   the conference room has space. If there is space, he enters. If there isn't
+   he waits until there is space. */
 void EnterConferenceRoom(int id) {
   sem_wait(&conference_room_sem);
   printf("Reporter %d enters the conference room.\n", id);
 }
 
-/* The reporter leaves the conference room and tells the semaphore that there is a new empty
-   slot. */
+/* The reporter leaves the conference room and tells the semaphore that there
+   is a new empty slot. */
 void LeaveConferenceRoom(int id) {
   printf("Reporter %d leaves the conference room.\n", id);
   sem_post(&conference_room_sem);
 }
 
-/* The reporter starts his question. He must first aquire the speech_mutex, so that only he 
-   can talk and no one else can interrupt him. He then signals the Speaker to answer the 
-   question. Afterwards, he waits for the Speaker.*/
+/* The reporter starts his question. He must first aquire the speech_mutex, so
+   that only he can talk and no one else can interrupt him. He then signals the
+   Speaker to answer the question. Afterwards, he waits for the Speaker. */
 void QuestionStart(int id) {
   pthread_mutex_lock(&speech_mutex);
 
@@ -181,8 +182,8 @@ void QuestionStart(int id) {
   pthread_cond_wait(&floor_cond, &floor_mutex);
 }
 
-/* Now the floor_mutex and speech_mutex locks are unlocked for the speaker and a new 
-   reporter can try to take teh speech_mutex lock. */
+/* Now the floor_mutex and speech_mutex locks are unlocked for the speaker and
+   a new reporter can try to take the speech_mutex lock. */
 void QuestionDone(int id) {
   pthread_mutex_unlock(&floor_mutex);
 
@@ -202,12 +203,12 @@ void SpeakerThread(void *args) {
 }
 
 /* The function that the reporters use when their thread is created.
-   The reporters are given an ID. The number of questions the reporter asks is based off 
-   their ID.
-   The reporter then enters the conference room. Once inside the conference room, he asks 
-   his questions.
-   The questions are decremented until there are no more questions. Then the reporter 
-   leaves the conference room. */
+   The reporters are given an ID. The number of questions the reporter asks is
+   based off their ID.
+   The reporter then enters the conference room. Once inside the conference
+   room, he asks his questions.
+   The questions are decremented until there are no more questions. Then the
+   reporter leaves the conference room. */
 void ReporterThread(void *args) {
   int id = (int)args;
   int questions = id % 4 + 2;
