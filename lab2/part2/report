@@ -52,5 +52,7 @@ have joined, the program ends.
 
 DESCRPTION OF TASKS
 +Mark Oleson: Wrote the make file, header, and C program.
-+Alexis Jefferson: Wrote report and comments.
-Both of us discussed ideas together.
++Alexis Jefferson: Discussed with Mark on the implementation of the program. 
+Wrote the report and all the comments on part2.c. Also test and gave 
+suggestions.
+
