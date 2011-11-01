@@ -207,7 +207,7 @@ struct slob_rcu {
  * slob_stat_lock protects the statistics for read and write operations.
  */
 static DEFINE_SPINLOCK(slob_lock);
-static DEFINE_SPINLOCK(slob_stat_lock);
+//static DEFINE_SPINLOCK(slob_stat_lock);
 
 /*
  * Encode the given size and next info into a free slob block s.
@@ -353,10 +353,10 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	/* Lab 3 System Call amt_claimed 
 	   First we put the new amount claimed long
 	   Then we add one to the counter */
-	spin_lock(&slob_stat_lock);
+//	spin_lock(&slob_stat_lock);
 	amt_claimed[counter] = SLOB_UNITS(size);
 	counter = (counter + 1) % 100;
-	spin_unlock(&slob_stat_lock);
+//	spin_unlock(&slob_stat_lock);
 
 	spin_lock_irqsave(&slob_lock, flags);
 	/* Iterate through each partially free page, try to find room */
@@ -728,12 +728,12 @@ asmlinkage long sys_get_slob_amt_claimed(void)
 {
 	long total = 0;
 
-	spin_lock(&slob_stat_lock);
+//	spin_lock(&slob_stat_lock);
 	for(i = 0; i < 100; i++)
 	{
 		total +=  amt_claimed[i];
 	}
-	spin_unlock(&slob_stat_lock);
+//	spin_unlock(&slob_stat_lock);
 
 	return total/2;
 }
