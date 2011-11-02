@@ -60,6 +60,9 @@
  * in order to prevent random node placement.
  */
 
+// LAB 3 - Switch to best-fit algorithm by defining SLOB_BEST_FIT_ALG
+#define SLOB_BEST_FIT_ALG
+
 #include <linux/linkage.h> /* Needed for Lab 3 system call */
 
 #include <linux/kernel.h>
