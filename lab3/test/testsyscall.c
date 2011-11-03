@@ -19,8 +19,8 @@ int main (void)
   //      buffer6 = (char*) malloc (105555555550);
     //    buffer7 = (char*) malloc (1000000000);
 
-	printf("%d\n", syscall(__NR_get_slob_amt_free));
-        printf("%d\n", syscall(__NR_get_slob_amt_claimed));
+	printf("Amount Free: %d\n", syscall(__NR_get_slob_amt_free));
+        printf("Amount Claimed: %d\n", syscall(__NR_get_slob_amt_claimed));
 	
         return 0;
 }
