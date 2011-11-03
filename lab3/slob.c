@@ -312,6 +312,7 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 			best_cur = cur;
 			best_aligned = aligned;
 			best_delta = delta;
+			best_fit = avail - (units + delta);
 
 #ifdef SLOB_BEST_FIT_ALG
 		}
