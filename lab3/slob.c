@@ -292,6 +292,10 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 	slob_t *prev, *cur, *aligned = NULL;
 	int delta = 0, units = SLOB_UNITS(size);
 
+	slob_t *best_prev, *best_cur, *best_aligned = NULL;
+	int best_delta;
+	slobidx_t best_fit;
+
 	for (prev = NULL, cur = sp->free; ; prev = cur, cur = slob_next(cur)) {
 		slobidx_t avail = slob_units(cur);
 
@@ -299,38 +303,59 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 			aligned = (slob_t *)ALIGN((unsigned long)cur, align);
 			delta = aligned - cur;
 		}
+#ifdef SLOB_BEST_FIT_ALG
+		if (avail >= units + delta && best_cur == NULL || avail - (units + delta) < best_fit) { /* room enough? */
+#else
 		if (avail >= units + delta) { /* room enough? */
-			slob_t *next;
+#endif
+			best_prev = prev;
+			best_cur = cur;
+			best_aligned = aligned;
+			best_delta = delta;
+
+#ifdef SLOB_BEST_FIT_ALG
+		}
+		if (slob_last(cur)) {
+			if (best_cur != NULL) {
+#endif
+			slob_t *best_next;
+			slobidx_t best_avail = slob_units(best_cur);
+
 
 			if (delta) { /* need to fragment head to align? */
-				next = slob_next(cur);
-				set_slob(aligned, avail - delta, next);
-				set_slob(cur, delta, aligned);
-				prev = cur;
-				cur = aligned;
-				avail = slob_units(cur);
+				best_next = slob_next(best_cur);
+				set_slob(best_aligned, best_avail - best_delta, best_next);
+				set_slob(best_cur, best_delta, best_aligned);
+				best_prev = best_cur;
+				best_cur = best_aligned;
+				best_avail = slob_units(best_cur);
 			}
 
-			next = slob_next(cur);
-			if (avail == units) { /* exact fit? unlink. */
-				if (prev)
-					set_slob(prev, slob_units(prev), next);
+			best_next = slob_next(best_cur);
+			if (best_avail == units) { /* exact fit? unlink. */
+				if (best_prev)
+					set_slob(best_prev, slob_units(best_prev), best_next);
 				else
-					sp->free = next;
+					sp->free = best_next;
 			} else { /* fragment */
-				if (prev)
-					set_slob(prev, slob_units(prev), cur + units);
+				if (best_prev)
+					set_slob(best_prev, slob_units(best_prev), best_cur + units);
 				else
-					sp->free = cur + units;
-				set_slob(cur + units, avail - units, next);
+					sp->free = best_cur + units;
+				set_slob(best_cur + units, best_avail - units, best_next);
 			}
 
 			sp->units -= units;
 			if (!sp->units)
 				clear_slob_page_free(sp);
-			return cur;
+			return best_cur;
+
+#ifdef SLOB_BEST_FIT_ALG
+			}
+#else
 		}
 		if (slob_last(cur))
+#endif
 			return NULL;
 	}
 }
