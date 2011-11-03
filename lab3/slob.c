@@ -304,7 +304,7 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 			delta = aligned - cur;
 		}
 #ifdef SLOB_BEST_FIT_ALG
-		if (avail >= units + delta && best_cur == NULL || avail - (units + delta) < best_fit) { /* room enough? */
+		if (avail >= units + delta && (best_cur == NULL || avail - (units + delta) < best_fit) ) { /* room enough? */
 #else
 		if (avail >= units + delta) { /* room enough? */
 #endif
