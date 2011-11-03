@@ -291,9 +291,9 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 	slob_t *prev, *cur, *aligned = NULL;
 	int delta = 0, units = SLOB_UNITS(size);
 
-	slob_t *best_prev, *best_cur, *best_aligned = NULL;
-	int best_delta;
-	slobidx_t best_fit;
+	slob_t *best_prev = NULL, *best_cur = NULL, *best_aligned = NULL;
+	int best_delta = 0;
+	slobidx_t best_fit = 0;
 
 	for (prev = NULL, cur = sp->free; ; prev = cur, cur = slob_next(cur)) {
 		slobidx_t avail = slob_units(cur);
@@ -318,7 +318,7 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 		if (slob_last(cur)) {
 			if (best_cur != NULL) {
 #endif
-			slob_t *best_next;
+			slob_t *best_next = NULL;
 			slobidx_t best_avail = slob_units(best_cur);
 
 
