@@ -139,11 +139,10 @@ static LIST_HEAD(free_slob_medium);
 static LIST_HEAD(free_slob_large);
 
 
-/* Variables for Lab 3 System Calls */
+/* Variables for Lab 3.1 System Calls */
 long amt_claimed [100]; 
 long amt_free [100];
 int counter = 0;
-int i = 0;
 
 
 /*
@@ -373,20 +372,16 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	slob_t *b = NULL;
 	unsigned long flags;
 
+	/* Lab 3.2 */
+        slobidx_t temp_amt_free = 0;
+
+
 	if (size < SLOB_BREAK1)
 		slob_list = &free_slob_small;
 	else if (size < SLOB_BREAK2)
 		slob_list = &free_slob_medium;
 	else
 		slob_list = &free_slob_large;
-
-	/* Lab 3 System Call amt_claimed 
-	   First we put the new amount claimed long
-	   Then we add one to the counter */
-//	spin_lock(&slob_stat_lock);
-	amt_claimed[counter] = SLOB_UNITS(size);
-	counter = (counter + 1) % 100;
-//	spin_unlock(&slob_stat_lock);
 
 	spin_lock_irqsave(&slob_lock, flags);
 	/* Iterate through each partially free page, try to find room */
@@ -407,7 +402,11 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		prev = sp->list.prev;
 		b = slob_page_alloc(sp, size, align);
 		if (!b)
+		{
+			/* Lab 3.3 */
+                        temp_amt_free = temp_amt_free + sp->units;
 			continue;
+		}
 
 		/* Improve fragment distribution and reduce our average
 		 * search time by starting our next search here. (see
@@ -428,6 +427,13 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		set_slob_page(sp);
 
 		spin_lock_irqsave(&slob_lock, flags);
+
+		/* Lab 3.4 */
+                amt_claimed[counter] = size;
+                amt_free[counter] = (temp_amt_free * SLOB_UNIT) - SLOB_UNIT + 1;
+                counter = (counter + 1) % 100;
+
+
 		sp->units = SLOB_UNITS(PAGE_SIZE);
 		sp->free = b;
 		INIT_LIST_HEAD(&sp->list);
@@ -756,20 +762,27 @@ void __init kmem_cache_init_late(void)
 /* System Calls for Lab 3 */
 asmlinkage long sys_get_slob_amt_claimed(void)
 {
-	long total = 0;
+        long total = 0;
+        int i = 0;
 
-//	spin_lock(&slob_stat_lock);
-	for(i = 0; i < 100; i++)
-	{
-		total +=  amt_claimed[i];
-	}
-//	spin_unlock(&slob_stat_lock);
+        for(i = 0; i < 100; i++)
+        {
+                total = total + amt_claimed[i];
+        }
 
-	return total/2;
+        return total/100;
 }
 
 asmlinkage long sys_get_slob_amt_free(void)
 {
-	printk("Hello");
-	return 1;
+        long total = 0;
+        int i = 0;
+
+        for(i = 0; i < 100; i++)
+        {
+                total = total + amt_free[i];
+        }
+
+        return total/100;
+
 }
