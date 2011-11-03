@@ -323,7 +323,7 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 			slobidx_t best_avail = slob_units(best_cur);
 
 
-			if (delta) { /* need to fragment head to align? */
+			if (best_delta) { /* need to fragment head to align? */
 				best_next = slob_next(best_cur);
 				set_slob(best_aligned, best_avail - best_delta, best_next);
 				set_slob(best_cur, best_delta, best_aligned);
