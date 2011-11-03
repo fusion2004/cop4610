@@ -354,9 +354,10 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 			}
 #else
 		}
-		if (slob_last(cur))
+		if (slob_last(cur)) {
 #endif
 			return NULL;
+		}
 	}
 }
 
