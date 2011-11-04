@@ -465,14 +465,12 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 			temp_amt_free = temp_amt_free + sp->units;
 			continue;
 		}
-#endif
 		/* Improve fragment distribution and reduce our average
 		 * search time by starting our next search here. (see
 		 * Knuth vol 1, sec 2.5, pg 449) */
-		if (b && prev != slob_list->prev &&
+		if (prev != slob_list->prev &&
 				slob_list->next != prev->next)
 			list_move_tail(slob_list, prev->next);
-#ifndef SLOB_BEST_FIT_ALG
 		break;
 #endif
 	}
