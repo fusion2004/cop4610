@@ -361,6 +361,32 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 	}
 }
 
+static void *slob_page_best_fit_check(struct slob_page *sp, size_t size, int align)
+{
+	slob_t *prev, *cur, *aligned = NULL;
+	int delta = 0, units = SLOB_UNITS(size);
+
+	slobidx_t best_fit = 0;
+
+	for (prev = NULL, cur = sp->free; ; prev = cur, cur = slob_next(cur)) {
+		slobidx_t avail = slob_units(cur);
+
+		if (align) {
+			aligned = (slob_t *)ALIGN((unsigned long)cur, align);
+			delta = aligned - cur;
+		}
+		if (avail >= units + delta && (best_cur == NULL || avail - (units + delta) < best_fit) ) { /* room enough? */
+			best_fit = avail - (units + delta);
+		}
+		if (slob_last(cur)) {
+			if (best_cur != NULL) {
+				return best_fit;
+			}
+			return -1;
+		}
+	}
+}
+
 /*
  * slob_alloc: entry point into the slob allocator.
  */
