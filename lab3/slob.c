@@ -361,7 +361,7 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 	}
 }
 
-static void *slob_page_best_fit_check(struct slob_page *sp, size_t size, int align)
+static int slob_page_best_fit_check(struct slob_page *sp, size_t size, int align)
 {
 	slob_t *prev, *cur, *aligned = NULL;
 	int delta = 0, units = SLOB_UNITS(size);
@@ -382,9 +382,9 @@ static void *slob_page_best_fit_check(struct slob_page *sp, size_t size, int ali
 		}
 		if (slob_last(cur)) {
 			if (best_cur != NULL) {
-				return (void *)(int)best_fit;
+				return best_fit;
 			}
-			return (void *)-1;
+			return -1;
 		}
 	}
 }
@@ -432,7 +432,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 			continue;
 
 #ifdef SLOB_BEST_FIT_ALG
-		current_fit = (int)slob_page_best_fit_check(sp, size, align);
+		current_fit = slob_page_best_fit_check(sp, size, align);
 		if(current_fit == 0) {
 			best_sp = sp;
 			best_fit = current_fit;
