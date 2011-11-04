@@ -450,6 +450,8 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	}
 
 	if(best_fit >= 0) {
+#else
+		best_sp = sp;
 #endif
 		/* Attempt to alloc */
 		prev = best_sp->list.prev;
@@ -468,6 +470,9 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		if (b && prev != slob_list->prev &&
 				slob_list->next != prev->next)
 			list_move_tail(slob_list, prev->next);
+#ifndef SLOB_BEST_FIT_ALG
+		break;
+#endif
 	}
 
 	spin_unlock_irqrestore(&slob_lock, flags);
