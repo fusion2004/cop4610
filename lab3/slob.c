@@ -61,7 +61,7 @@
  */
 
 // LAB 3 - Switch to best-fit algorithm by defining SLOB_BEST_FIT_ALG
-#define SLOB_BEST_FIT_ALG
+//#define SLOB_BEST_FIT_ALG
 
 #include <linux/linkage.h> /* Needed for Lab 3 system call */
 
@@ -366,6 +366,7 @@ static void *slob_page_best_fit_check(struct slob_page *sp, size_t size, int ali
 	slob_t *prev, *cur, *aligned = NULL;
 	int delta = 0, units = SLOB_UNITS(size);
 
+	slob_t *best_cur = NULL;
 	slobidx_t best_fit = 0;
 
 	for (prev = NULL, cur = sp->free; ; prev = cur, cur = slob_next(cur)) {
@@ -376,13 +377,14 @@ static void *slob_page_best_fit_check(struct slob_page *sp, size_t size, int ali
 			delta = aligned - cur;
 		}
 		if (avail >= units + delta && (best_cur == NULL || avail - (units + delta) < best_fit) ) { /* room enough? */
+			best_cur = cur;
 			best_fit = avail - (units + delta);
 		}
 		if (slob_last(cur)) {
 			if (best_cur != NULL) {
-				return best_fit;
+				return (void *)(int)best_fit;
 			}
-			return -1;
+			return (void *)-1;
 		}
 	}
 }
@@ -402,7 +404,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
         slobidx_t temp_amt_free = 0;
 
 	// Lab 3
-	struct slob_page *best_sp;
+	struct slob_page *best_sp = NULL;
 	int best_fit = -1;
 
 	if (size < SLOB_BREAK1)
@@ -429,13 +431,14 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		if (sp->units < SLOB_UNITS(size))
 			continue;
 
-		current_fit = slob_page_best_fit_check(sp, size, align);
-		if(current_fit = 0) {
+#ifdef SLOB_BEST_FIT_ALG
+		current_fit = (int)slob_page_best_fit_check(sp, size, align);
+		if(current_fit == 0) {
 			best_sp = sp;
 			best_fit = current_fit;
 			break;
 		}
-		else if(current_fit = -1) {
+		else if(current_fit == -1) {
 			/* Lab 3.3 */
 			temp_amt_free = temp_amt_free + sp->units;
 		}
@@ -447,10 +450,18 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	}
 
 	if(best_fit >= 0) {
+#endif
 		/* Attempt to alloc */
 		prev = best_sp->list.prev;
 		b = slob_page_alloc(best_sp, size, align);
 
+#ifndef SLOB_BEST_FIT_ALG
+		if(!b) {
+			/* Lab 3.3 */
+			temp_amt_free = temp_amt_free + sp->units;
+			continue;
+		}
+#endif
 		/* Improve fragment distribution and reduce our average
 		 * search time by starting our next search here. (see
 		 * Knuth vol 1, sec 2.5, pg 449) */
