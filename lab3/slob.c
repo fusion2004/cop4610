@@ -404,6 +404,8 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 
 	/* Lab 3.2 */
         long temp_amt_free = 0;
+	int flag_amt_free = 0;
+
 
 	// Lab 3
 	struct slob_page *best_sp = NULL;
@@ -441,10 +443,14 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 			break;
 		}
 		else if(current_fit == -1) {
-			/* Lab 3.3 */
-			temp_amt_free = temp_amt_free + sp->units;
+			/* Lab 3.5 */
+			if( flag_amt_free == 0)
+				temp_amt_free = temp_amt_free + sp->units;
 		}
 		else if(current_fit > 0 && current_fit < best_fit) {
+			/* Lab 3.6 */
+			flag_amt_free = 1;
+
 			best_sp = sp;
 			best_fit = current_fit;
 		}
