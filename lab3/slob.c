@@ -401,7 +401,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	unsigned long flags;
 
 	/* Lab 3.2 */
-        slobidx_t temp_amt_free = 0;
+        long temp_amt_free = 0;
 
 	// Lab 3
 	struct slob_page *best_sp = NULL;
