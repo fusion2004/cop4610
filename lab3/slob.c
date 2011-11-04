@@ -379,6 +379,8 @@ static int slob_page_best_fit_check(struct slob_page *sp, size_t size, int align
 		if (avail >= units + delta && (best_cur == NULL || avail - (units + delta) < best_fit) ) { /* room enough? */
 			best_cur = cur;
 			best_fit = avail - (units + delta);
+			if(best_fit == 0)
+				return 0;
 		}
 		if (slob_last(cur)) {
 			if (best_cur != NULL) {
