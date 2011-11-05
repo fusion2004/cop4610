@@ -450,7 +450,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 			//if( flag_amt_free == 0)
 				//temp_amt_free = temp_amt_free + sp->units;
 		}
-		else if(current_fit > 0 && current_fit < best_fit) {
+		else if(current_fit > 0 && (best_fit == -1 || current_fit < best_fit) ) {
 			/* Lab 3.6 */
 			//flag_amt_free = 1;
 
