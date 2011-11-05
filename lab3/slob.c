@@ -423,6 +423,9 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	list_for_each_entry(sp, slob_list, list) {
 		int current_fit = -1;
 
+		/* Lab 3.3 */
+		temp_amt_free = temp_amt_free + sp->units;
+
 #ifdef CONFIG_NUMA
 		/*
 		 * If there's a node specification, search for a partial
@@ -444,12 +447,12 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		}
 		else if(current_fit == -1) {
 			/* Lab 3.5 */
-			if( flag_amt_free == 0)
-				temp_amt_free = temp_amt_free + sp->units;
+			//if( flag_amt_free == 0)
+				//temp_amt_free = temp_amt_free + sp->units;
 		}
 		else if(current_fit > 0 && current_fit < best_fit) {
 			/* Lab 3.6 */
-			flag_amt_free = 1;
+			//flag_amt_free = 1;
 
 			best_sp = sp;
 			best_fit = current_fit;
@@ -468,7 +471,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 #ifndef SLOB_BEST_FIT_ALG
 		if(!b) {
 			/* Lab 3.3 */
-			temp_amt_free = temp_amt_free + sp->units;
+			//temp_amt_free = temp_amt_free + sp->units;
 			continue;
 		}
 		/* Improve fragment distribution and reduce our average
