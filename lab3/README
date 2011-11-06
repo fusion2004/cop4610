@@ -1,0 +1,22 @@
+Mark Oleson
+Alexis Jefferson
+	COP4610 Lab 3
+
+Using the first-fit algorithm provided by the SLOB, we run our system
+calls.
+	Amount Free: 415778 bytes
+	Amount Claimed: 2068 bytes
+We can see the fragmentation by looking at the amount free being 
+significantly higher than the amount claimed. Meaning, our system on 
+average is claiming a new page needing only 2k bytes when we have 
+400k bytes free. But due to the free list being fragmented, we can't 
+use those free bytes.
+
+
+Using our best-fit algorithm, we run our system calls.
+	Amount Free: 296196 bytes
+	Amount Claimed: 2241 bytes
+Notice that there is still fragmentation. The amount that is free is still
+much higher than the amount we are trying to allocate. But also compare 
+this amount free with the first-fit's amount free. Our best-fit algorithm 
+contains half the fragmentation.
