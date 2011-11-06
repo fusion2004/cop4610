@@ -60,7 +60,7 @@
  * in order to prevent random node placement.
  */
 
-// LAB 3 - Switch to best-fit algorithm by defining SLOB_BEST_FIT_ALG
+// Lab 3 - Switch to best-fit algorithm by defining SLOB_BEST_FIT_ALG
 #define SLOB_BEST_FIT_ALG
 
 #include <linux/linkage.h> /* Needed for Lab 3 system call */
@@ -139,7 +139,7 @@ static LIST_HEAD(free_slob_medium);
 static LIST_HEAD(free_slob_large);
 
 
-/* Variables for Lab 3.1 System Calls */
+// Lab 3 - Statistics
 long amt_claimed [100]; 
 long amt_free [100];
 int counter = 0;
@@ -321,7 +321,6 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 			slob_t *best_next = NULL;
 			slobidx_t best_avail = slob_units(best_cur);
 
-
 			if (best_delta) { /* need to fragment head to align? */
 				best_next = slob_next(best_cur);
 				set_slob(best_aligned, best_avail - best_delta, best_next);
@@ -383,9 +382,9 @@ static int slob_page_best_fit_check(struct slob_page *sp, size_t size, int align
 				return 0;
 		}
 		if (slob_last(cur)) {
-			if (best_cur != NULL) {
+			if (best_cur != NULL) 
 				return best_fit;
-			}
+			
 			return -1;
 		}
 	}
@@ -402,12 +401,9 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	slob_t *b = NULL;
 	unsigned long flags;
 
-	/* Lab 3.2 */
+	// Lab 3 - Statistics
         long temp_amt_free = 0;
-	int flag_amt_free = 0;
 
-
-	// Lab 3
 	struct slob_page *best_sp = NULL;
 	int best_fit = -1;
 
@@ -423,7 +419,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	list_for_each_entry(sp, slob_list, list) {
 		int current_fit = -1;
 
-		/* Lab 3.3 */
+		// Lab 3 - Statistics
 		temp_amt_free = temp_amt_free + sp->units;
 
 #ifdef CONFIG_NUMA
@@ -445,15 +441,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 			best_fit = current_fit;
 			break;
 		}
-		else if(current_fit == -1) {
-			/* Lab 3.5 */
-			//if( flag_amt_free == 0)
-				//temp_amt_free = temp_amt_free + sp->units;
-		}
 		else if(current_fit > 0 && (best_fit == -1 || current_fit < best_fit) ) {
-			/* Lab 3.6 */
-			//flag_amt_free = 1;
-
 			best_sp = sp;
 			best_fit = current_fit;
 		}
@@ -463,17 +451,16 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 	if(best_fit >= 0) {
 #else
 		best_sp = sp;
+		prev = best_sp->list.prev;
+
 #endif
 		/* Attempt to alloc */
-		prev = best_sp->list.prev;
 		b = slob_page_alloc(best_sp, size, align);
 
 #ifndef SLOB_BEST_FIT_ALG
-		if(!b) {
-			/* Lab 3.3 */
-			//temp_amt_free = temp_amt_free + sp->units;
+		if(!b)
 			continue;
-		}
+		
 		/* Improve fragment distribution and reduce our average
 		 * search time by starting our next search here. (see
 		 * Knuth vol 1, sec 2.5, pg 449) */
@@ -496,11 +483,10 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 
 		spin_lock_irqsave(&slob_lock, flags);
 
-		/* Lab 3.4 */
+		// Lab 3 - Statistics
                 amt_claimed[counter] = size;
                 amt_free[counter] = (temp_amt_free * SLOB_UNIT) - SLOB_UNIT + 1;
                 counter = (counter + 1) % 100;
-
 
 		sp->units = SLOB_UNITS(PAGE_SIZE);
 		sp->free = b;
