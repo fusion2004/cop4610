@@ -3,8 +3,37 @@
  *
  * Matt Mackall <mpm@selenic.com> 12/30/03
  *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * MODIFIED BY MARK OLESON & ALEXIS JEFFERSON
  *   FOR COP4610 COURSE, LAB 3
+ *
+ * Alexis Jefferson worked on implementing the system calls, helping
+ * 	fix/testing the best-fit algorithm, and writing the report.
+ * Mark Oleson worked on the main portion of the best-fit algorithm.
+ *
+ * We modified the SLOB to implement a best-fit algorithm. We added a
+ * SLOB_BEST_FIT_ALG definition right after the header. If 
+ * SLOB_BEST_FIT_ALG is defined, the SLOB will use the best-fit algorithm. 
+ * If it is not defined (e.g., we comment out the define), then SLOB will 
+ * use the first-fit algorithm. We use a series of ifdef's (that will be 
+ * explained in more detail below) to separate the logic between the 
+ * first-fit and best-fit. We chose to do this so we could easily run 
+ * tests between these two algorithms. 
+ *
+ * We defined 3 new global variables at the top: 2 arrays of 100 longs 
+ * named amt_claimed and amt_free; and a counter to keep track of where 
+ * to put the next item into the respective list. And we added two system 
+ * calls to the bottom of slob.c: sys_get_slob_amt_claimed and 
+ * sys_get_slob_amt_free. Both functions return the average of their 
+ * respective lists as described in the Lab 3 assignment description.
+ *
+ * We modified the slob_alloc function to find the best fit page. We 
+ * modified the slob_page_alloc function to return the best-fit block on a 
+ * given page. And we added a helper function, slob_page_best_fit_check 
+ * which figures out if this page contains the best fit.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  *
  * NUMA support by Paul Mundt, 2007.
  *
@@ -285,6 +314,14 @@ static void slob_free_pages(void *b, int order)
 
 /*
  * Allocate a slob block within a given slob_page sp.
+ * 
+ * We modified the slob_page_alloc function to find the 
+ * best block on a given page. We understand that it is 
+ * searching through a page's free blocks twice (once 
+ * from the helper, and a second time for this function). 
+ * We make a best version of all the variables in the 
+ * function to keep track of the best block. Then we go 
+ * through the entire block list and return the best block.
  */
 static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 {
@@ -360,6 +397,16 @@ static void *slob_page_alloc(struct slob_page *sp, size_t size, int align)
 	}
 }
 
+/*
+ * The helper function, slob_page_best_fit_check, goes 
+ * through the page's list of blocks and returns a number. 
+ * The number will either be -1, 0, or some positive integer. -1 
+ * means that there is no big enough block. 0 means a perfect 
+ * fitted block. Any positive integer represents the amount 
+ * that will be left over in the block if allocation happens. We 
+ * either want this number to be 0 or as low as possible for 
+ * best-fit algorithm.
+*/
 static int slob_page_best_fit_check(struct slob_page *sp, size_t size, int align)
 {
 	slob_t *prev, *cur, *aligned = NULL;
@@ -392,6 +439,39 @@ static int slob_page_best_fit_check(struct slob_page *sp, size_t size, int align
 
 /*
  * slob_alloc: entry point into the slob allocator.
+ *
+ * We modified the slob_alloc function. We defined new local variables: 
+ *   1.) temp_amt_free will accumulate all the free bytes on each page 
+ * (used for the system call sys_get_slob_amt_free); 
+ *   2.) best_sp points to the page with the "best fit"; 
+ *   3.) best_fit/ current_fit contain a number in which the smaller 
+ * the number, the better the fit; best_fit is the overall best number 
+ * and current_fit is the current page's number
+ * 
+ * When iterating through the free page list, our slob_alloc will: 
+ *   1.) collect the free units of the page and store them into 
+ * temp_amt_free; 
+ *   2.) call a helper function slob_page_best_fit_check which 
+ * returns a number put into current_fit.
+ *   3.) This current_fit number is checked against a number of 
+ * cases. First case is if current_fit is equal to 0. This means,
+ * a perfect fit, so we break out of the loop and allocate there. 
+ * Second case is -1, meaning there is no block fit so we continue 
+ * the loop. Last case is some positive number so we check to see if 
+ * this number is less than the best_fit. Or we check to see if 
+ * best_fit has been set yet. If this case is reached, then the new 
+ * best page is the current page in the loop.
+ * 
+ * Once the loop is over, we try to allocate on that page if best_fit is 
+ * some positive number. Otherwise, we don't have enough space and must 
+ * allocate a new page. This part of the slob_alloc function was mostly 
+ * unchanged except for updating the values of the array lists for the 
+ * system calls. When we have to allocate a new page, is when we set the 
+ * amt_claimed, at position of the counter, to the size of the request (in 
+ * bytes). We  also set the amt_free, at the position of the counter, to 
+ * the total accumulated units from the list, converting it to bytes. Then 
+ * we increment the counter.
+ *
  */
 static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 {
@@ -813,7 +893,16 @@ void __init kmem_cache_init_late(void)
 	/* Nothing to do */
 }
 
-/* System Calls for Lab 3 */
+/* System Calls for Lab 3 
+ *
+ * In combination, these can see fragmentation of a 
+ * system at a given moment. When called, both functions 
+ * return the average of their respective lists. The 
+ * amt_claimed average is of the size of the memory 
+ * allocations that had to create a new page on the page 
+ * file. The amt_free average is the size of all the pages' 
+ * free space.
+*/
 asmlinkage long sys_get_slob_amt_claimed(void)
 {
         long total = 0;
