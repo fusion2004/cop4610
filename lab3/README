@@ -2,22 +2,34 @@ Mark Oleson
 Alexis Jefferson
 	COP4610 Lab 3
 
-We created a test program that calls both of our created system 
-calls. We ran this test program in both implementations of the 
-SLOB: best-fit and first-fit. We ran this test program several 
-times until we arrived at values of 500 bytes claimed. This would be 
-useful in keeping consistency.
+We created a test program that calls both of our created system
+calls. We ran this test program in both implementations of the
+SLOB: best-fit and first-fit. We ran this test program several
+times until we arrived at values of 500 bytes claimed. This was
+useful in keeping consistency while comparing the two algorithms.
 
-Using the first-fit algorithm, for 500 bytes being the amount claimed, 
-the first-fit SLOB had roughly 500k bytes free. We can see the 
-fragmentation by looking at the amount free being significantly higher 
-than the amount claimed. Meaning, our system on average is claiming a 
-new page needing only 500 bytes when we have 500k bytes free. But due 
-to the free list being fragmented, we can't use those free bytes.
+Using the first-fit algorithm, for 500 bytes being the amount claimed,
+the first-fit SLOB allocator had roughly 500k bytes free. We can see the
+fragmentation by looking at the amount free being significantly higher
+than the amount claimed. Meaning, our system on average is claiming a
+new page when attempting to allocate 500 bytes, when we have 500k bytes
+free. But due to the free list being highly fragmented, we can't use
+those free bytes.
 
-Using our best-fit algorithm, we run our system calls. For 500 bytes 
-claimed, the best-fit SLOB had roughly 300k bytes free.Notice that there 
-is still fragmentation. The amount that is free is still much higher than 
-the amount we are trying to allocate. But also compare this amount free 
-with the first-fit's amount free. Our best-fit algorithm contains half the 
-fragmentation.
+Using our best-fit algorithm, we run our system calls. For 500 bytes
+claimed, the best-fit SLOB had roughly 300k bytes free. You can see
+that there is still fragmentation, as is expected, but that the degree
+of it was much less. The amount that is free is still much higher than
+the amount we are trying to allocate.
+
+When you compare the two sets of statistics, you can see that the best-
+fit algorithm implementation reduced fragmentation by almost half.
+The other major thing to consider between the two algorithms is the
+speed difference. We expect the best-fit algorithm to be slower because
+it ends up searching the entire list of pages much more often than the
+first-fit algorithm does. For most functions (booting, file/folder
+operations, etc), the speed difference is neglible. However, doing
+an operation that will initiate many successive memory allocations
+will significantly slow down the system. The best example of that
+happening that we found was trying to compile the kernel from the best-
+fit implementation.
