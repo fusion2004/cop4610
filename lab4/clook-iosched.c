@@ -43,6 +43,9 @@ static void clook_add_request(struct request_queue *q, struct request *rq)
 		}
 	}
 	list_add_tail(&rq->queuelist, cur);
+
+	char readwrite = (&rq->cmd_flags & REQ_WRITE) ? 'W' : 'R';
+	printk("[CLOOK] add %c %u", readwrite, rq_end_sector(rq));
 }
 
 static int clook_queue_empty(struct request_queue *q)
