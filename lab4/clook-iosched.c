@@ -27,6 +27,10 @@ static int clook_dispatch(struct request_queue *q, int force)
 		rq = list_entry(nd->queue.next, struct request, queuelist);
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
+		
+		char readwrite = (&rq->cmd_flags & REQ_WRITE) ? 'W' : 'R';
+		printk("[CLOOK] dsp %c %u", readwrite, blk_rq_pos(rq));
+		
 		return 1;
 	}
 	return 0;
