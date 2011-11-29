@@ -1,5 +1,5 @@
 /*
- * elevator noop
+ * elevator clook
  */
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
@@ -116,6 +116,6 @@ module_init(noop_init);
 module_exit(noop_exit);
 
 
-MODULE_AUTHOR("Jens Axboe");
+MODULE_AUTHOR("Mark Oleson & Alexis Jefferson");
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("No-op IO scheduler");
+MODULE_DESCRIPTION("C-LOOK IO scheduler");
