@@ -35,9 +35,9 @@ static int clook_dispatch(struct request_queue *q, int force)
 static void clook_add_request(struct request_queue *q, struct request *rq)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
-	struct list_head *cur = null;
+	struct list_head *cur = NULL;
 
-	list_for_each(cur, nd->queue) {
+	list_for_each(cur, &nd->queue) {
 		if(rq_end_sector(list_entry(cur, struct request, queuelist)) > rq_end_sector(rq)) {
 			break;
 		}
