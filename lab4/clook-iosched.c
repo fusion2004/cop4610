@@ -1,5 +1,11 @@
 /*
- * elevator clook
+ *   elevator clook
+ *
+ *   MODIFIED BY MARK OLESON & ALEXIS JEFFERSON
+ *   FOR COP4610 COURSE, LAB 4
+ *
+ *   Only edited the clook_add_request and clook_dispatch functions
+ *
  */
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
@@ -18,6 +24,9 @@ static void clook_merged_requests(struct request_queue *q, struct request *rq,
 	list_del_init(&next->queuelist);
 }
 
+/* Edited this function to add the print statement, which prints out 
+   whether the data was being written (W) or read (R)  whenever the
+   dispatcher is called.  */
 static int clook_dispatch(struct request_queue *q, int force)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
@@ -36,11 +45,16 @@ static int clook_dispatch(struct request_queue *q, int force)
 	return 0;
 }
 
+/* Edited this function to organize the requests in the list by their 
+   physical location on the disk. Also added the print statement to print 
+   out whether the data was being written (W) or read (R) whenever a request
+   is added. */
 static void clook_add_request(struct request_queue *q, struct request *rq)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
 	struct list_head *cur = NULL;
 
+	/* This loop puts the request in the right order by comparing physical locations */
 	list_for_each(cur, &nd->queue) {
 		if(rq_end_sector(list_entry(cur, struct request, queuelist)) > rq_end_sector(rq)) {
 			break;
