@@ -3,7 +3,7 @@ Alexis Jefferson
 COP4610 Lab 4 Report
 -------------------------------------------------------------
 TEST SCRIPT
-Our test file simply reads/writes two different files: TESTFILE and TESTFILE2. 
+Our test bash script simply reads/writes two different files: TESTFILE and TESTFILE2. 
 We ran the test script and the following is our results from dmesg: 
 
 [ 2246.016344] [CLOOK] add W 16558
