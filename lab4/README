@@ -1,0 +1,48 @@
+Mark Oleson
+Alexis Jefferson
+COP4610 Lab 4 Report
+-------------------------------------------------------------
+TEST SCRIPT
+Our test file simply reads/writes two different files: TESTFILE and TESTFILE2. 
+We ran the test script and the following is our results from dmesg: 
+
+[ 2246.016344] [CLOOK] add W 16558
+[ 2246.016355] [CLOOK] add W 16542
+[ 2246.016367] [CLOOK] dsp W 16542
+[ 2246.016508] [CLOOK] dsp W 16558
+[ 2246.016956] [CLOOK] add W 528542
+[ 2246.016972] [CLOOK] dsp W 528542
+[ 2246.017260] [CLOOK] add W 528574
+[ 2246.017265] [CLOOK] dsp W 528574
+[ 2278.016306] [CLOOK] add W 16582
+[ 2278.016325] [CLOOK] add W 16654
+[ 2278.016350] [CLOOK] dsp W 16574
+[ 2278.016592] [CLOOK] dsp W 16654
+[ 2278.017200] [CLOOK] add R 528606
+[ 2278.017209] [CLOOK] dsp R 528606
+[ 2278.044804] [CLOOK] add W 528582
+[ 2278.044823] [CLOOK] add W 528614
+[ 2278.044860] [CLOOK] dsp W 528582
+[ 2278.045117] [CLOOK] dsp W 528614
+
+You can notice several places where the adding of the request was not in 
+order of physical location:
+[ 2246.016344] [CLOOK] add W 16558
+[ 2246.016355] [CLOOK] add W 16542
+But then the requests were dispatched in the correct order:
+[ 2246.016367] [CLOOK] dsp W 16542
+[ 2246.016508] [CLOOK] dsp W 16558
+
+Also, here's an example where the adding of the request was in the right
+order and the dispatcher kept that order:
+[ 2278.044804] [CLOOK] add W 528582
+[ 2278.044823] [CLOOK] add W 528614
+[ 2278.044860] [CLOOK] dsp W 528582
+[ 2278.045117] [CLOOK] dsp W 528614
+
+-------------------------------------------------------------
+RESPONSIBILITIES OF TEAM MEMBERS
+
+Both Mark Oleson and Alexis Jefferson worked on the plan to implement the 
+clook algorithm before editing the clook-iosched.c file. Both worked on 
+the clook algorithm. Both worked together on the test file.
